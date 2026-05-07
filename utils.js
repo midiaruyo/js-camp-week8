@@ -19,7 +19,11 @@ function getDiscountRate(product) {
  * @returns {Array} - 分類陣列
  */
 function getAllCategories(products) {
-  // 請實作此函式
+  if (!products||!Array.isArray(products)) {
+    console.warn("getAllCategories 錯誤：傳入的資料不是陣列格式");
+    return [];
+  }
+  return [...new Set(products.map((product) => product.category))];
 }
 
 /**
@@ -28,8 +32,20 @@ function getAllCategories(products) {
  * @returns {string} - 格式 'YYYY/MM/DD HH:mm'，例如 '2024/01/01 08:00'
  */
 function formatDate(timestamp) {
-  // 請實作此函式
-  // 提示：dayjs.unix...
+
+  if (!Number.isInteger(timestamp)) {
+    return "輸入的時間戳必須是整數";
+  }
+  if (timestamp <= 0) {
+    return "時間戳不可小於等於0";
+  }
+  //預防不合理的timestamp，過長的秒數
+  const date = dayjs.unix(timestamp);
+  if (!date.isValid()) {
+    return "無效日期";
+  }
+
+  return date.format("YYYY/MM/DD HH:mm");
 }
 
 /**
@@ -38,11 +54,23 @@ function formatDate(timestamp) {
  * @returns {string} - 例如 '3 天前'
  */
 function getDaysAgo(timestamp) {
-  // 請實作此函式
-  // 提示：
   // 1. 用 dayjs() 取得今天
-  // 2. 用 dayjs.unix(timestamp) 取得日期
+  const currDate = dayjs();
+  //console.log(currDate.format('YYYY/MM/DD'));
+
+  // 2. 用 dayjs.unix(timestamp) 取得訂單日期
+  const orderDate = dayjs.unix(timestamp);
+  //console.log(orderDate.format('YYYY/MM/DD'));
+
   // 3. 用 .diff() 計算天數差異
+  const diffDays = currDate.diff(orderDate, "day");
+
+  //輸入的日期大於今天，回傳錯誤
+  if (diffDays < 0) {
+    return `日期錯誤：訂單日期${orderDate} > 現在日期${currDate}`;
+  }
+
+  return diffDays === 0 ? `今天` : `${diffDays}天前`;
 }
 
 /**
@@ -58,7 +86,25 @@ function getDaysAgo(timestamp) {
  * - payment: 必須是 'ATM', 'Credit Card', 'Apple Pay' 其中之一
  */
 function validateOrderUser(data) {
-  // 請實作此函式
+  const payOpt = ["ATM", "Credit Card", "Apple Pay"];
+  const errors = [];
+
+  if (!data.name || data.name.trim() === "") {
+    errors.push("name 不可為空");
+  }
+  if (!/^09\d{8}$/.test(data.tel)) {
+    errors.push("tel 必須是 09 開頭的 10 位數字");
+  }
+  if (!data.email || !data.email.includes("@")) {
+    errors.push("Email 格式不正確");
+  }
+  if (!data.address || data.address.trim() === "") {
+    errors.push("address: 不可為空");
+  }
+  if (!data.payment || !payOpt.includes(data.payment)) {
+    errors.push("payment 必須是 'ATM', 'Credit Card', 'Apple Pay' 其中之一");
+  }
+  return { isValid: errors.length === 0, errors };
 }
 
 /**
@@ -72,7 +118,17 @@ function validateOrderUser(data) {
  * - 不可大於 99
  */
 function validateCartQuantity(quantity) {
-  // 請實作此函式
+  const errors = [];
+  if (!Number.isInteger(quantity)) {
+    errors.push("必須是正整數");
+  }
+  if (quantity < 1) {
+    errors.push("不可小於 1");
+  }
+  if (quantity > 99) {
+    errors.push("不可大於 99");
+  }
+  return { isValid: errors.length === 0, errors };
 }
 
 /**
