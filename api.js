@@ -2,8 +2,8 @@
 // API 請求函式
 // ========================================
 
-const axios = require('axios');
-const { API_PATH, BASE_URL, ADMIN_TOKEN } = require('./config');
+const axios = require("axios");
+const { API_PATH, BASE_URL, ADMIN_TOKEN } = require("./config");
 
 // ========== 客戶端 API ==========
 
@@ -12,8 +12,18 @@ const { API_PATH, BASE_URL, ADMIN_TOKEN } = require('./config');
  * @returns {Promise<Array>}
  */
 async function fetchProducts() {
-  // 請實作此函式
-  // 回傳 response.data.products
+
+  const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/products`;
+
+  try {
+    const response = await axios.get(apiUrl);
+    return response.data.products;
+
+  } catch (error) {
+    console.log(`fetchProducts error：${error.message}`);
+    return [];
+
+  }
 }
 
 /**
@@ -21,7 +31,23 @@ async function fetchProducts() {
  * @returns {Promise<Object>} - 回傳 { carts: [...], total: 數字, finalTotal: 數字 }
  */
 async function fetchCart() {
-  // 請實作此函式
+
+  const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
+
+  try {
+    const response = await axios.get(apiUrl);
+    return response.data;
+
+  } catch (error) {
+    return {
+      status: error.response?.data?.status ?? false,
+      message: error.response?.data?.message || error.message,
+      carts: [],
+      total: 0,
+      finalTotal: 0,
+    };
+
+  }
 }
 
 /**
@@ -31,7 +57,24 @@ async function fetchCart() {
  * @returns {Promise<Object>} - 回傳購物車資料
  */
 async function addToCart(productId, quantity) {
-  // 請實作此函式
+
+  const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
+  const payload = { data: { productId: productId, quantity: quantity } };
+
+  try {
+    const response = await axios.post(apiUrl, payload);
+    return response.data;
+
+  } catch (error) {
+    return {
+      status: error.response?.data?.status ?? false,
+      message: error.response?.data?.message || error.message,
+      carts: [],
+      total: 0,
+      finalTotal: 0,
+    };
+
+  }
 }
 
 /**
@@ -41,16 +84,60 @@ async function addToCart(productId, quantity) {
  * @returns {Promise<Object>} - 回傳購物車資料
  */
 async function updateCartItem(cartId, quantity) {
-  // 請實作此函式
+
+  const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
+  const payload = { data: { id: cartId, quantity: quantity } };
+
+  try {
+    const response = await axios.patch(apiUrl, payload);
+    return response.data;
+
+  } catch (error) {
+    return {
+      status: error.response?.data?.status ?? false,
+      message: error.response?.data?.message || error.message,
+      carts: [],
+      total: 0,
+      finalTotal: 0,
+    };
+
+  }
 }
 
 /**
  * 刪除購物車商品
  * @param {string} cartId - 購物車項目 ID
  * @returns {Promise<Object>} - 回傳購物車資料
+ *
  */
 async function deleteCartItem(cartId) {
-  // 請實作此函式
+
+  if (!cartId) {
+    return {
+      status: false,
+      message: `刪除失敗，cartId：${cartId}`,
+      carts: [],
+      total: 0,
+      finalTotal: 0,
+    };
+  }
+
+  const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts/${cartId}`;
+
+  try {
+    const response = await axios.delete(apiUrl);
+    return response.data;
+  
+  } catch (error) {
+    return {
+      status: error.response?.data?.status ?? false,
+      message: error.response?.data?.message || error.message,
+      carts: [],
+      total: 0,
+      finalTotal: 0,
+    };
+  
+  }
 }
 
 /**
@@ -58,7 +145,23 @@ async function deleteCartItem(cartId) {
  * @returns {Promise<Object>} - 回傳購物車資料
  */
 async function clearCart() {
-  // 請實作此函式
+
+  const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
+
+  try {
+    const response = await axios.delete(apiUrl);
+    return response.data;
+
+  } catch (error) {
+    return {
+      status: error.response?.data?.status ?? false,
+      message: error.response?.data?.message || error.message,
+      carts: [],
+      total: 0,
+      finalTotal: 0,
+    };
+
+  }
 }
 
 /**
@@ -67,7 +170,21 @@ async function clearCart() {
  * @returns {Promise<Object>}
  */
 async function createOrder(userInfo) {
-  // 請實作此函式
+
+  const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/orders`;
+  const payload = { data: userInfo };
+  
+  try {
+    const response = await axios.post(apiUrl, payload);
+    return response.data;
+  
+  } catch (error) {
+    return {
+      status: error.response?.data?.status ?? false,
+      message: error.response?.data?.message || error.message
+    };
+  
+  }
 }
 
 // ========== 管理員 API ==========
@@ -85,7 +202,19 @@ async function createOrder(userInfo) {
  * @returns {Promise<Array>}
  */
 async function fetchOrders() {
-  // 請實作此函式
+
+  const apiUrl = `${BASE_URL}/api/livejs/v1/admin/${API_PATH}/orders`;
+  const config = { headers: { authorization: ADMIN_TOKEN }};
+
+  try {
+    const response = await axios.get(apiUrl, config);
+    return response.data.orders;
+
+  } catch (error) {
+    console.log(`fetchOrders error：${error.message}`);
+    return [];
+
+  }
 }
 
 /**
@@ -93,18 +222,59 @@ async function fetchOrders() {
  * @param {string} orderId - 訂單 ID
  * @param {boolean} isPaid - 是否已付款
  * @returns {Promise<Object>}
+ *
  */
 async function updateOrderStatus(orderId, isPaid) {
-  // 請實作此函式
+
+  const apiUrl = `${BASE_URL}/api/livejs/v1/admin/${API_PATH}/orders`;
+  const payload = { data: { id: orderId, paid: isPaid } };
+  const config = { headers: { authorization: ADMIN_TOKEN }};
+
+  try {
+    const response = await axios.put(apiUrl, payload, config);
+    return response.data;
+
+  } catch (error) {
+    return {
+      status: error.response?.data?.status ?? false,
+      message: error.response?.data?.message || error.message,
+      orders: []
+    };
+
+  }
 }
 
 /**
  * 刪除訂單
  * @param {string} orderId - 訂單 ID
  * @returns {Promise<Object>}
+ *
  */
 async function deleteOrder(orderId) {
-  // 請實作此函式
+
+  if (!orderId) {
+    return {
+      status: error.response?.data?.status ?? false,
+      message: error.response?.data?.message || error.message,
+      orders: [],
+    };
+  }
+
+  const apiUrl = `${BASE_URL}/api/livejs/v1/admin/${API_PATH}/orders/${orderId}`;
+  const config = { headers: { authorization: ADMIN_TOKEN }};
+
+  try {
+    const response = await axios.delete(apiUrl, config);
+    return response.data;
+
+  } catch (error) {
+    return {
+      status: error.response?.data?.status ?? false,
+      message: error.response?.data?.message || error.message,
+      orders: []
+    };
+  }
+
 }
 
 module.exports = {
@@ -117,5 +287,5 @@ module.exports = {
   createOrder,
   fetchOrders,
   updateOrderStatus,
-  deleteOrder
+  deleteOrder,
 };
