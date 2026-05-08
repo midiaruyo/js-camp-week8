@@ -11,19 +11,21 @@ const dayjs = require("dayjs");
  * @description 計算採取四捨五入至整數 (例：7.4折 → 7折)
  */
 function getDiscountRate(product) {
+
+  //檢查輸入的金額
   const { origin_price, price } = product;
+  if (!origin_price || origin_price <= 0) return "無法計算：原價為0，無法計算";
+  if (typeof price !== "number" || price < 0) return "無法計算：售價錯誤";
+  if (price >= origin_price) return "無法計算：售價大於等於原價，無法折扣";
 
-  if (!origin_price || origin_price <= 0) return "原價為0，無法計算";
-  if (typeof price !== 'number' || price < 0) return "售價錯誤";
-  if (price >= origin_price) return "無折";
-
+  //轉換輸入的折扣
   const rawRate = (price / origin_price) * 10;
-  const rateTimes10 = Math.round(rawRate * 10); 
+  const rateTimes10 = Math.round(rawRate * 10);
 
+   // 其他情況（如 7.4, 7.6）進行四捨五入到整數
   if (rateTimes10 % 10 === 5) {
     return `${rateTimes10}折`;
   } else {
-    // 其他情況（如 7.4, 7.6）進行四捨五入到整數
     const roundedRate = Math.round(rawRate);
     return `${roundedRate}折`;
   }
@@ -35,6 +37,7 @@ function getDiscountRate(product) {
  * @returns {Array} - 分類陣列
  */
 function getAllCategories(products) {
+
   if (!products || !Array.isArray(products)) {
     console.warn("getAllCategories 錯誤：傳入的資料不是陣列格式");
     return [];
@@ -49,6 +52,7 @@ function getAllCategories(products) {
  * @returns {string} - 格式 'YYYY/MM/DD HH:mm'，例如 '2024/01/01 08:00'
  */
 function formatDate(timestamp) {
+
   if (!Number.isInteger(timestamp)) {
     return "輸入的時間戳必須是整數";
   }
@@ -70,16 +74,15 @@ function formatDate(timestamp) {
  * @returns {string} - 例如 '3 天前'
  */
 function getDaysAgo(timestamp) {
-  const currDate = dayjs().startOf("day");
-  const orderDate = dayjs.unix(timestamp).startOf("day");
 
+  //檢查輸入的日期合法日期？
+  const orderDate = dayjs.unix(timestamp).startOf("day");
   if (!orderDate.isValid()) {
     return "無效的日期格式";
   }
-
+  //檢查輸入的日期是否大於今天？
+  const currDate = dayjs().startOf("day");
   const diffDays = currDate.diff(orderDate, "day");
-
-  //輸入的日期大於今天，回傳錯誤
   if (diffDays < 0) {
     return `日期錯誤：訂單日期${orderDate.format(
       "YYYY-MM-DD"
@@ -102,11 +105,13 @@ function getDaysAgo(timestamp) {
  * - payment: 必須是 'ATM', 'Credit Card', 'Apple Pay' 其中之一
  */
 function validateOrderUser(data) {
+
   const payOpt = ["ATM", "Credit Card", "Apple Pay"];
   const errors = [];
 
-  if (!data) return { isValid: false, errors: ["無資料"] };
-
+  if (!data) {
+    return { isValid: false, errors: ["無資料"] };
+  }
   if (!data.name || data.name.trim() === "") {
     errors.push("name 不可為空");
   }
@@ -122,6 +127,7 @@ function validateOrderUser(data) {
   if (!data.payment || !payOpt.includes(data.payment)) {
     errors.push("payment 必須是 'ATM', 'Credit Card', 'Apple Pay' 其中之一");
   }
+
   return { isValid: errors.length === 0, errors };
 }
 
@@ -136,6 +142,7 @@ function validateOrderUser(data) {
  * - 不可大於 99
  */
 function validateCartQuantity(quantity) {
+
   if (!Number.isInteger(quantity)) {
     return { isValid: false, error: "必須是正整數" };
   }
@@ -145,6 +152,7 @@ function validateCartQuantity(quantity) {
   if (quantity > 99) {
     return { isValid: false, error: "不可大於 99" };
   }
+
   return { isValid: true, error: "" };
 }
 
@@ -172,6 +180,7 @@ function formatCurrency(amount) {
   }
 
   const outFormatted = new Intl.NumberFormat("zh-TW").format(amount);
+
   return `NT$ ${outFormatted}`;
 }
 
