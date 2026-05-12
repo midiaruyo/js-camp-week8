@@ -19,10 +19,10 @@ async function getCart() {
   try {
     const data = await fetchCart();
     return data;
-  } catch (error) {
+  } catch (err) {
     return {
-      status: error.response?.data?.status ?? false,
-      message: error.response?.data?.message || error.message,
+      status: err.response?.data?.status ?? false,
+      message: err.response?.data?.message || err.message,
       carts: [],
       total: 0,
       finalTotal: 0,
@@ -58,13 +58,11 @@ async function addProductToCart(productId, quantity) {
       success: true,
       data,
     };
-  } catch (error) {
+  } catch (err) {
     return {
       success: false,
       error:
-        error.response?.data?.message ||
-        error.message ||
-        "加入商品到購物車失敗",
+        err.response?.data?.message || err.message || "加入商品到購物車失敗",
     };
   }
 }
@@ -83,11 +81,11 @@ async function updateProduct(cartId, quantity) {
     };
   }
   // 提示：先用 utils validateCartQuantity() 驗證數量，驗證失敗時回傳 { success: false, error: ... }
-  const { isValid, error } = validateCartQuantity(quantity);
+  const { isValid, error: validationError } = validateCartQuantity(quantity);
   if (!isValid) {
     return {
       success: false,
-      error,
+      error: validationError,
     };
   }
   // 回傳格式：{ success: true, data: ... } / { success: false, error: ... }
@@ -97,13 +95,10 @@ async function updateProduct(cartId, quantity) {
       success: true,
       data,
     };
-  } catch (error) {
+  } catch (err) {
     return {
       success: false,
-      error:
-        error.response?.data?.message ||
-        error.message ||
-        "更新購物車商品數量失敗",
+      error:err.response?.data?.message || err.message || "更新購物車商品數量失敗",
     };
   }
 }
@@ -127,11 +122,10 @@ async function removeProduct(cartId) {
       success: true,
       data,
     };
-  } catch (error) {
+  } catch (err) {
     return {
       success: false,
-      error:
-        error.response?.data?.message || error.message || "移除購物車商品失敗",
+      error: err.response?.data?.message || err.message || "移除購物車商品失敗",
     };
   }
 }
@@ -148,10 +142,10 @@ async function emptyCart() {
       success: true,
       data,
     };
-  } catch (error) {
+  } catch (err) {
     return {
       success: false,
-      error: error.response?.data?.message || error.message || "清空購物車失敗",
+      error: err.response?.data?.message || err.message || "清空購物車失敗",
     };
   }
 }
@@ -166,7 +160,7 @@ async function getCartTotal() {
     // 在解構時，直接給予每個變數預設值
     const { total = 0, finalTotal = 0, carts = [] } = (await fetchCart()) || {};
     return { total, finalTotal, itemCount: carts.length };
-  } catch (error) {
+  } catch (err) {
     return {
       total: 0,
       finalTotal: 0,
@@ -190,15 +184,14 @@ async function getCartTotal() {
   // 折扣後金額：NT$ 1,600
  */
 function displayCart(cart) {
-
   // 判斷購物車是否為空（cart.carts 不存在或長度為 0），若空則輸出「購物車是空的」
   const { total, finalTotal, carts } = cart || {};
   if (!Array.isArray(carts)) {
     console.error("API 回傳格式異常：carts 應該要是陣列");
-    return "購物車是空的"; 
+    return "購物車是空的";
   }
   if (carts.length === 0) {
-    return "購物車是空的"; 
+    return "購物車是空的";
   }
   //顯示輸出
   const sepStr = "----------------------------------------\n";
@@ -206,18 +199,17 @@ function displayCart(cart) {
   carts.forEach((item, index) => {
     const currItemNo = index + 1;
     const curQty = item.quantity;
-    const curPrice = item.product.origin_price;
+    const unitPrice = item.product.origin_price;
     outStr +=
       `${currItemNo}. ${item.product.title}\n` +
       `   數量：${curQty}\n` +
-      `   單價：${formatCurrency(curPrice)}\n` +
-      `   小計：${formatCurrency(curQty * curPrice)}\n` +
+      `   單價：${formatCurrency(unitPrice)}\n` +
+      `   小計：${formatCurrency(curQty * unitPrice)}\n` +
       sepStr;
   });
   outStr += `商品總計：${formatCurrency(total)}\n`;
   outStr += `折扣後金額：${formatCurrency(finalTotal)}\n`;
   return outStr;
-
 }
 
 module.exports = {
