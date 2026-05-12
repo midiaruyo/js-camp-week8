@@ -95,6 +95,7 @@ async function getCategories() {
 }
  */
 function displayProducts(products) {
+  
   // 預期輸出格式：
   // 產品列表：
   // ----------------------------------------
@@ -103,11 +104,14 @@ function displayProducts(products) {
   //    原價：NT$ 1,000
   //    售價：NT$ 800 (8折)
   // ----------------------------------------
-
   if (!Array.isArray(products)) {
-    console.warn("displayProducts 錯誤：傳入的資料不是陣列格式");
-    return "";
+    console.error("API 回傳格式異常：products 應該要是陣列");
+    console.log("產品列表是空的");
   }
+  if (products.length === 0) {
+    console.log("產品列表是空的");
+  }
+
   let outStr = "";
   const sepStr = "----------------------------------------\n";
 
@@ -121,7 +125,7 @@ function displayProducts(products) {
       `   售價：${formatCurrency(item.price)} (${getDiscountRate(item)})\n` +
       sepStr;
   });
-  return outStr;
+  console.log(outStr);
 }
 
 module.exports = {

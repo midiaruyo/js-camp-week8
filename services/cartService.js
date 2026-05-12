@@ -188,10 +188,10 @@ function displayCart(cart) {
   const { total, finalTotal, carts } = cart || {};
   if (!Array.isArray(carts)) {
     console.error("API 回傳格式異常：carts 應該要是陣列");
-    return "購物車是空的";
+    console.log("購物車是空的");
   }
   if (carts.length === 0) {
-    return "購物車是空的";
+    console.log("購物車是空的");
   }
   //顯示輸出
   const sepStr = "----------------------------------------\n";
@@ -209,7 +209,7 @@ function displayCart(cart) {
   });
   outStr += `商品總計：${formatCurrency(total)}\n`;
   outStr += `折扣後金額：${formatCurrency(finalTotal)}\n`;
-  return outStr;
+  console.log(outStr);
 }
 
 module.exports = {
