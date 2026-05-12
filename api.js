@@ -25,18 +25,8 @@ async function fetchProducts() {
 async function fetchCart() {
   const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
 
-  try {
-    const response = await axios.get(apiUrl);
-    return response.data;
-  } catch (error) {
-    return {
-      status: error.response?.data?.status ?? false,
-      message: error.response?.data?.message || error.message,
-      carts: [],
-      total: 0,
-      finalTotal: 0,
-    };
-  }
+  const response = await axios.get(apiUrl);
+  return response.data;
 }
 
 /**
@@ -49,18 +39,8 @@ async function addToCart(productId, quantity) {
   const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
   const payload = { data: { productId: productId, quantity: quantity } };
 
-  try {
-    const response = await axios.post(apiUrl, payload);
-    return response.data;
-  } catch (error) {
-    return {
-      status: error.response?.data?.status ?? false,
-      message: error.response?.data?.message || error.message,
-      carts: [],
-      total: 0,
-      finalTotal: 0,
-    };
-  }
+  const response = await axios.post(apiUrl, payload);
+  return response.data;
 }
 
 /**
@@ -73,18 +53,8 @@ async function updateCartItem(cartId, quantity) {
   const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
   const payload = { data: { id: cartId, quantity: quantity } };
 
-  try {
-    const response = await axios.patch(apiUrl, payload);
-    return response.data;
-  } catch (error) {
-    return {
-      status: error.response?.data?.status ?? false,
-      message: error.response?.data?.message || error.message,
-      carts: [],
-      total: 0,
-      finalTotal: 0,
-    };
-  }
+  const response = await axios.patch(apiUrl, payload);
+  return response.data;
 }
 
 /**
@@ -94,30 +64,10 @@ async function updateCartItem(cartId, quantity) {
  *
  */
 async function deleteCartItem(cartId) {
-  if (!cartId) {
-    return {
-      status: false,
-      message: `刪除失敗，cartId：${cartId}`,
-      carts: [],
-      total: 0,
-      finalTotal: 0,
-    };
-  }
-
   const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts/${cartId}`;
 
-  try {
-    const response = await axios.delete(apiUrl);
-    return response.data;
-  } catch (error) {
-    return {
-      status: error.response?.data?.status ?? false,
-      message: error.response?.data?.message || error.message,
-      carts: [],
-      total: 0,
-      finalTotal: 0,
-    };
-  }
+  const response = await axios.delete(apiUrl);
+  return response.data;
 }
 
 /**
@@ -127,18 +77,8 @@ async function deleteCartItem(cartId) {
 async function clearCart() {
   const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
 
-  try {
-    const response = await axios.delete(apiUrl);
-    return response.data;
-  } catch (error) {
-    return {
-      status: error.response?.data?.status ?? false,
-      message: error.response?.data?.message || error.message,
-      carts: [],
-      total: 0,
-      finalTotal: 0,
-    };
-  }
+  const response = await axios.delete(apiUrl);
+  return response.data;
 }
 
 /**
