@@ -12,18 +12,10 @@ const { API_PATH, BASE_URL, ADMIN_TOKEN } = require("./config");
  * @returns {Promise<Array>}
  */
 async function fetchProducts() {
-
   const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/products`;
 
-  try {
-    const response = await axios.get(apiUrl);
-    return response.data.products;
-
-  } catch (error) {
-    console.log(`fetchProducts error：${error.message}`);
-    return [];
-
-  }
+  const response = await axios.get(apiUrl);
+  return response.data.products;
 }
 
 /**
@@ -31,13 +23,11 @@ async function fetchProducts() {
  * @returns {Promise<Object>} - 回傳 { carts: [...], total: 數字, finalTotal: 數字 }
  */
 async function fetchCart() {
-
   const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
 
   try {
     const response = await axios.get(apiUrl);
     return response.data;
-
   } catch (error) {
     return {
       status: error.response?.data?.status ?? false,
@@ -46,7 +36,6 @@ async function fetchCart() {
       total: 0,
       finalTotal: 0,
     };
-
   }
 }
 
@@ -57,14 +46,12 @@ async function fetchCart() {
  * @returns {Promise<Object>} - 回傳購物車資料
  */
 async function addToCart(productId, quantity) {
-
   const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
   const payload = { data: { productId: productId, quantity: quantity } };
 
   try {
     const response = await axios.post(apiUrl, payload);
     return response.data;
-
   } catch (error) {
     return {
       status: error.response?.data?.status ?? false,
@@ -73,7 +60,6 @@ async function addToCart(productId, quantity) {
       total: 0,
       finalTotal: 0,
     };
-
   }
 }
 
@@ -84,14 +70,12 @@ async function addToCart(productId, quantity) {
  * @returns {Promise<Object>} - 回傳購物車資料
  */
 async function updateCartItem(cartId, quantity) {
-
   const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
   const payload = { data: { id: cartId, quantity: quantity } };
 
   try {
     const response = await axios.patch(apiUrl, payload);
     return response.data;
-
   } catch (error) {
     return {
       status: error.response?.data?.status ?? false,
@@ -100,7 +84,6 @@ async function updateCartItem(cartId, quantity) {
       total: 0,
       finalTotal: 0,
     };
-
   }
 }
 
@@ -111,7 +94,6 @@ async function updateCartItem(cartId, quantity) {
  *
  */
 async function deleteCartItem(cartId) {
-
   if (!cartId) {
     return {
       status: false,
@@ -127,7 +109,6 @@ async function deleteCartItem(cartId) {
   try {
     const response = await axios.delete(apiUrl);
     return response.data;
-  
   } catch (error) {
     return {
       status: error.response?.data?.status ?? false,
@@ -136,7 +117,6 @@ async function deleteCartItem(cartId) {
       total: 0,
       finalTotal: 0,
     };
-  
   }
 }
 
@@ -145,13 +125,11 @@ async function deleteCartItem(cartId) {
  * @returns {Promise<Object>} - 回傳購物車資料
  */
 async function clearCart() {
-
   const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`;
 
   try {
     const response = await axios.delete(apiUrl);
     return response.data;
-
   } catch (error) {
     return {
       status: error.response?.data?.status ?? false,
@@ -160,7 +138,6 @@ async function clearCart() {
       total: 0,
       finalTotal: 0,
     };
-
   }
 }
 
@@ -170,20 +147,17 @@ async function clearCart() {
  * @returns {Promise<Object>}
  */
 async function createOrder(userInfo) {
-
   const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/orders`;
   const payload = { data: userInfo };
-  
+
   try {
     const response = await axios.post(apiUrl, payload);
     return response.data;
-  
   } catch (error) {
     return {
       status: error.response?.data?.status ?? false,
-      message: error.response?.data?.message || error.message
+      message: error.response?.data?.message || error.message,
     };
-  
   }
 }
 
@@ -202,18 +176,15 @@ async function createOrder(userInfo) {
  * @returns {Promise<Array>}
  */
 async function fetchOrders() {
-
   const apiUrl = `${BASE_URL}/api/livejs/v1/admin/${API_PATH}/orders`;
-  const config = { headers: { authorization: ADMIN_TOKEN }};
+  const config = { headers: { authorization: ADMIN_TOKEN } };
 
   try {
     const response = await axios.get(apiUrl, config);
     return response.data.orders;
-
   } catch (error) {
     console.log(`fetchOrders error：${error.message}`);
     return [];
-
   }
 }
 
@@ -225,22 +196,19 @@ async function fetchOrders() {
  *
  */
 async function updateOrderStatus(orderId, isPaid) {
-
   const apiUrl = `${BASE_URL}/api/livejs/v1/admin/${API_PATH}/orders`;
   const payload = { data: { id: orderId, paid: isPaid } };
-  const config = { headers: { authorization: ADMIN_TOKEN }};
+  const config = { headers: { authorization: ADMIN_TOKEN } };
 
   try {
     const response = await axios.put(apiUrl, payload, config);
     return response.data;
-
   } catch (error) {
     return {
       status: error.response?.data?.status ?? false,
       message: error.response?.data?.message || error.message,
-      orders: []
+      orders: [],
     };
-
   }
 }
 
@@ -251,7 +219,6 @@ async function updateOrderStatus(orderId, isPaid) {
  *
  */
 async function deleteOrder(orderId) {
-
   if (!orderId) {
     return {
       status: error.response?.data?.status ?? false,
@@ -261,20 +228,18 @@ async function deleteOrder(orderId) {
   }
 
   const apiUrl = `${BASE_URL}/api/livejs/v1/admin/${API_PATH}/orders/${orderId}`;
-  const config = { headers: { authorization: ADMIN_TOKEN }};
+  const config = { headers: { authorization: ADMIN_TOKEN } };
 
   try {
     const response = await axios.delete(apiUrl, config);
     return response.data;
-
   } catch (error) {
     return {
       status: error.response?.data?.status ?? false,
       message: error.response?.data?.message || error.message,
-      orders: []
+      orders: [],
     };
   }
-
 }
 
 module.exports = {
