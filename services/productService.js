@@ -104,7 +104,7 @@ function displayProducts(products) {
   //    售價：NT$ 800 (8折)
   // ----------------------------------------
 
-  if (!products || !Array.isArray(products)) {
+  if (!Array.isArray(products)) {
     console.warn("displayProducts 錯誤：傳入的資料不是陣列格式");
     return "";
   }
