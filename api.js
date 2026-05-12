@@ -88,17 +88,10 @@ async function clearCart() {
  */
 async function createOrder(userInfo) {
   const apiUrl = `${BASE_URL}/api/livejs/v1/customer/${API_PATH}/orders`;
-  const payload = { data: userInfo };
+  const payload = { data: { user: userInfo } };
 
-  try {
-    const response = await axios.post(apiUrl, payload);
-    return response.data;
-  } catch (error) {
-    return {
-      status: error.response?.data?.status ?? false,
-      message: error.response?.data?.message || error.message,
-    };
-  }
+  const response = await axios.post(apiUrl, payload);
+  return response.data;
 }
 
 // ========== 管理員 API ==========
@@ -119,13 +112,9 @@ async function fetchOrders() {
   const apiUrl = `${BASE_URL}/api/livejs/v1/admin/${API_PATH}/orders`;
   const config = { headers: { authorization: ADMIN_TOKEN } };
 
-  try {
-    const response = await axios.get(apiUrl, config);
-    return response.data.orders;
-  } catch (error) {
-    console.log(`fetchOrders error：${error.message}`);
-    return [];
-  }
+  const response = await axios.get(apiUrl, config);
+  //console.log(response.data.orders[0]);
+  return response.data.orders;
 }
 
 /**
@@ -140,16 +129,8 @@ async function updateOrderStatus(orderId, isPaid) {
   const payload = { data: { id: orderId, paid: isPaid } };
   const config = { headers: { authorization: ADMIN_TOKEN } };
 
-  try {
-    const response = await axios.put(apiUrl, payload, config);
-    return response.data;
-  } catch (error) {
-    return {
-      status: error.response?.data?.status ?? false,
-      message: error.response?.data?.message || error.message,
-      orders: [],
-    };
-  }
+  const response = await axios.put(apiUrl, payload, config);
+  return response.data;
 }
 
 /**
@@ -159,27 +140,11 @@ async function updateOrderStatus(orderId, isPaid) {
  *
  */
 async function deleteOrder(orderId) {
-  if (!orderId) {
-    return {
-      status: error.response?.data?.status ?? false,
-      message: error.response?.data?.message || error.message,
-      orders: [],
-    };
-  }
-
   const apiUrl = `${BASE_URL}/api/livejs/v1/admin/${API_PATH}/orders/${orderId}`;
   const config = { headers: { authorization: ADMIN_TOKEN } };
 
-  try {
-    const response = await axios.delete(apiUrl, config);
-    return response.data;
-  } catch (error) {
-    return {
-      status: error.response?.data?.status ?? false,
-      message: error.response?.data?.message || error.message,
-      orders: [],
-    };
-  }
+  const response = await axios.delete(apiUrl, config);
+  return response.data;
 }
 
 module.exports = {
